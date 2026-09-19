@@ -11,4 +11,5 @@ type Hospital struct {
 	Longitude      float64 `json:"longitude"`
 	TempoEsperaMin int     `json:"tempo_espera_min"`
 	Status         string  `json:"status"`
+	Tipo           string  `json:"tipo"`
 }

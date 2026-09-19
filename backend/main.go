@@ -45,7 +45,7 @@ func main() {
 func listarHospitais(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	rows, err := conn.Query(ctx, "SELECT id, nome, endereco, latitude, longitude, tempo_espera_min, status FROM hospitais")
+	rows, err := conn.Query(ctx, "SELECT id, nome, endereco, latitude, longitude, tempo_espera_min, status, tipo FROM hospitais")
 	if err != nil {
 		http.Error(w, "Erro ao consultar hospitais", http.StatusInternalServerError)
 		log.Println("Erro na consulta:", err)
@@ -59,7 +59,7 @@ func listarHospitais(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var h Hospital
-		err := rows.Scan(&h.ID, &h.Nome, &h.Endereco, &h.Latitude, &h.Longitude, &h.TempoEsperaMin, &h.Status)
+		err := rows.Scan(&h.ID, &h.Nome, &h.Endereco, &h.Latitude, &h.Longitude, &h.TempoEsperaMin, &h.Status, &h.Tipo)
 		if err != nil {
 			http.Error(w, "Erro ao ler hospital", http.StatusInternalServerError)
 			log.Println("Erro no scan:", err)
