@@ -27,7 +27,7 @@ func main() {
 
 	// Registra: "quando chegar um pedido na rota /hospitais,
 	// chame a função listarHospitais para responder."
-	http.HandleFunc("/hospitais", listarHospitais)
+	http.HandleFunc("/hospitais", enableCORS(listarHospitais))
 
 	log.Println("Servidor rodando em http://localhost:8080")
 
@@ -81,5 +81,18 @@ func listarHospitais(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(hospitais)
 	if err != nil {
 		log.Println("Erro ao gerar JSON:", err)
+	}
+}
+
+// enableCORS "envolve" outro handler, adicionando os cabeçalhos que autorizam
+// o navegador a aceitar a resposta mesmo vindo de outra porta/origem.
+// Isso é um padrão comum em Go chamado "middleware": uma função que recebe
+// um handler e devolve outro handler, com um comportamento extra no meio.
+func enableCORS(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		next(w, r)
 	}
 }
