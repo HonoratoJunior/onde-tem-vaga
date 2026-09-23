@@ -29,6 +29,7 @@ func main() {
 	// (como /hospitais/3) fica disponível dentro do handler.
 	http.HandleFunc("GET /hospitais", enableCORS(listarHospitais))
 	http.HandleFunc("GET /hospitais/{id}", enableCORS(buscarHospitalPorID))
+	http.HandleFunc("/hospitais/{id}/relatos", enableCORS(criarRelato))
 
 	log.Println("Servidor rodando em http://localhost:8080")
 
@@ -36,6 +37,57 @@ func main() {
 	if err != nil {
 		log.Fatal("Erro ao iniciar servidor: ", err)
 	}
+}
+
+func criarRelato(w http.ResponseWriter, r *http.Request) {
+	// O navegador manda um pedido OPTIONS antes do POST de verdade,
+	// só perguntando "posso enviar?". Respondemos "pode" e paramos
+	// por aqui — não tem dado nenhum pra processar nesse pedido.
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idTexto := r.PathValue("id")
+	hospitalID, err := strconv.Atoi(idTexto)
+	if err != nil {
+		http.Error(w, "ID de hospital inválido", http.StatusBadRequest)
+		return
+	}
+
+	var relato Relato
+	// Decode lê o corpo da requisição (que vem em JSON) e preenche
+	// os campos da struct Relato automaticamente, casando pelos
+	// nomes das tags json:"..." que definimos.
+	err = json.NewDecoder(r.Body).Decode(&relato)
+	if err != nil {
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+
+	ctx := context.Background()
+
+	// Exec é usado quando não esperamos nenhuma linha de volta —
+	// diferente de Query e QueryRow, que servem para leitura.
+	_, err = conn.Exec(ctx,
+		"INSERT INTO relatos (hospital_id, nivel_espera, tempo_min, comentario) VALUES ($1, $2, $3, $4)",
+		hospitalID, relato.NivelEspera, relato.TempoMin, relato.Comentario,
+	)
+	if err != nil {
+		http.Error(w, "Erro ao salvar relato", http.StatusInternalServerError)
+		log.Println("Erro no INSERT:", err)
+		return
+	}
+
+	// 201 Created é o código HTTP correto para "algo novo foi criado com sucesso"
+	// — diferente do 200 genérico que usamos nas buscas.
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"mensagem":"Relato salvo com sucesso"}`))
 }
 
 func enableCORS(next http.HandlerFunc) http.HandlerFunc {

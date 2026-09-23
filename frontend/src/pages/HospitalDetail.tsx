@@ -46,6 +46,9 @@ function HospitalDetail() {
         <div style={{ marginTop: '10px' }}>
           <span className={`tag tag-${hospital.status}`}>{hospital.status}</span>{' '}
           <span className="tag-tipo">{hospital.tipo === 'upa' ? 'UPA' : 'Hospital'}</span>
+                  <Link to={`/hospital/${hospital.id}/relatar`} style={{ display: 'block', marginTop: '16px', textAlign: 'center', background: '#0F5C4F', color: '#fff', padding: '11px', borderRadius: '8px', textDecoration: 'none' }}>
+          Relatar situação
+        </Link>
         </div>
       </div>
     </div>
