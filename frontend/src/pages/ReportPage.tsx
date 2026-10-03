@@ -23,7 +23,7 @@ function ReportPage() {
     setErro('')
 
     try {
-      const resposta = await fetch(`http://localhost:8080/hospitais/${id}/relatos`, {
+      const resposta = await fetch(`${import.meta.env.VITE_API_URL}/hospitais/${id}/relatos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

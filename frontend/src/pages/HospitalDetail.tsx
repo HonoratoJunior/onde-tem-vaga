@@ -21,7 +21,7 @@ function HospitalDetail() {
   const [hospital, setHospital] = useState<Hospital | null>(null)
 
   useEffect(() => {
-    fetch(`http://localhost:8080/hospitais/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/hospitais/${id}`)
       .then((res) => res.json())
       .then((data) => setHospital(data))
       .catch((err) => console.error('Erro ao buscar hospital:', err))

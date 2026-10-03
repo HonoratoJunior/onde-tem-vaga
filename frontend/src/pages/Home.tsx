@@ -17,7 +17,7 @@ function Home() {
   const [hospitais, setHospitais] = useState<Hospital[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:8080/hospitais')
+    fetch(`${import.meta.env.VITE_API_URL}/hospitais`)
       .then((res) => res.json())
       .then((data) => setHospitais(data))
       .catch((err) => console.error('Erro ao buscar hospitais:', err))

@@ -1,0 +1,3 @@
+#!/bin/bash
+export DATABASE_URL="postgres://ondevaga_app:0202@localhost:5432/onde_tem_vaga"
+go run .

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/jackc/pgx/v5"
@@ -13,8 +14,10 @@ import (
 var conn *pgx.Conn
 
 func main() {
-	connString := "postgres://ondevaga_app:5857@localhost:5432/onde_tem_vaga"
-
+	connString := os.Getenv("DATABASE_URL")
+	if connString == "" {
+		log.Fatal("A variável de ambiente DATABASE_URL não foi definida")
+	}
 	ctx := context.Background()
 	var err error
 	conn, err = pgx.Connect(ctx, connString)
